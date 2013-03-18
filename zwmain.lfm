@@ -1,8 +1,11 @@
 object Form1: TForm1
-  Left = 200
-  Height = 240
-  Top = 100
-  Width = 320
-  Caption = 'Form1'
+  Left = 0
+  Height = 480
+  Top = 0
+  Width = 640
+  BorderStyle = bsNone
+  Caption = 'ZoomWorld'
+  Color = 2363408
   LCLVersion = '1.0.6.0'
+  WindowState = wsMaximized
 end
