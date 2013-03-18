@@ -1,4 +1,4 @@
-object Form1: TForm1
+object MainForm: TMainForm
   Left = 0
   Height = 480
   Top = 0
@@ -6,6 +6,12 @@ object Form1: TForm1
   BorderStyle = bsNone
   Caption = 'ZoomWorld'
   Color = 2363408
+  OnPaint = FormPaint
   LCLVersion = '1.0.6.0'
   WindowState = wsMaximized
+  object HeartBeat: TTimer
+    OnTimer = HeartBeatTimer
+    left = 25
+    top = 25
+  end
 end
