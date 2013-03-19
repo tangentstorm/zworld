@@ -14,6 +14,9 @@ type
 
   TMainForm = class( TForm )
     HeartBeat : TTimer;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormPaint( Sender : TObject );
     procedure HeartBeatTimer( Sender : TObject );
   private
@@ -31,25 +34,47 @@ type
   TCard = class
     bounds : TRect;
     text   : String;
+    x, y, w, h : integer;
     fg, bg : TBGRAPixel;
-    constructor create;
+    sprite : TBGRABitmap;
+    constructor Create;
+    destructor Destroy; override;
   end;
   TDeck = array of TCard;
 var
   deck : TDeck;
   i : integer;
 
-constructor TCard.Create;
+constructor TCard. Create;
 begin
-  bounds.Left := random( 800 );
-  bounds.Top  := random( 600 );
-  bounds.Right := bounds.left + 45;
-  bounds.Bottom := bounds.top + 25;
+  x := random( 800 );
+  y := random( 600 );
+  w := 45;
+  h := 25;
+  bounds.Left := 0;
+  bounds.Top := 0;
+  bounds.Right := w;
+  bounds.Bottom := h;
   fg := rgb(clBlack);
   bg := rgb(clWhite);
   text := IntToHex(i, 4);
+  sprite := TBGRABitmap.Create(w,h);
+  sprite.FontHeight := 15;
+  sprite.FontAntialias := true;
+  sprite.FontStyle := [fsBold];
+  { the -1 here gives it a slight drop shadow effect }
+  sprite.FillRect(0, 0, w-1, h-1, bg, dmSet);
+  sprite.TextRect( bounds, text, taCenter, tlCenter, fg );
+  bounds.Left := x;
+  bounds.Top  := y;
+  bounds.Right := bounds.left + w;
+  bounds.Bottom := bounds.top + h;
 end;
 
+destructor TCard.Destroy;
+begin
+  sprite.Free;
+end;
 
 {$R *.lfm}
 
@@ -68,14 +93,13 @@ begin
   Repaint
 end;
 
-
-procedure TMainForm.FormPaint( Sender : TObject );
 var
   img : TBGRABitmap;
-begin
-  img := TBGRABitmap.Create( ClientWidth, ClientHeight, Self.Color );
 
+procedure TMainForm.FormPaint( Sender : TObject );
+begin
   img.FillRect(0, 0, ClientWidth, 25, $000000 );
+  img.FillRect(0, 25, ClientWidth, ClientHeight, Self.Color );
 
   img.FontHeight := 15;
   img.FontAntialias := true;
@@ -86,16 +110,32 @@ begin
   for i := low(deck) to high(deck) do
     with deck[i] do
     begin
-      img.FillRect(bounds, bg, dmSet);
-      img.TextRect(bounds, text, taCenter, tlCenter, fg )
+      img.PutImage( bounds.left, bounds.top, sprite, dmSet );
     end;
 
   img.Draw( self.canvas, 0, 0, True );
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  img := TBGRABitmap.Create( ClientWidth, ClientHeight, Self.Color );
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
   img.Free;
 end;
 
+procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
-  SetLength( deck, 100 );
+  if key = #27 then begin
+    HeartBeat.Enabled := false;
+    Close
+  end
+end;
+
+begin
+  SetLength( deck, 256 );
   for i := low(deck) to high(deck) do
      deck[i] := TCard.create;
 end.

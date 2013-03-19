@@ -6,11 +6,14 @@ object MainForm: TMainForm
   BorderStyle = bsNone
   Caption = 'ZoomWorld'
   Color = 2363408
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyPress = FormKeyPress
   OnPaint = FormPaint
   LCLVersion = '1.0.6.0'
   WindowState = wsMaximized
   object HeartBeat: TTimer
-    Interval = 10
+    Interval = 5
     OnTimer = HeartBeatTimer
     left = 25
     top = 25
